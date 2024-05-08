@@ -1,0 +1,8 @@
+numpy
+opencv-contrib-python
+scikit-learn
+tensorflow
+keras
+pygame
+gym-super-mario-bros
+nes-py
