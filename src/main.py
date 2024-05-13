@@ -6,6 +6,8 @@ from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 import cv2
 import pygame
 
+from keras._tf_keras.keras.models import load_model
+
 # installare pygame, gym-super-mario-bros, nes-py
 
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
@@ -21,11 +23,12 @@ for step in range(5000):
     state, reward, terminated, truncated, info = env.step(env.action_space.sample())
     done = terminated or truncated
     
-    state = cv2.cvtColor(state, cv2.COLOR_RGB2BGR)
+    # state = cv2.cvtColor(state, cv2.COLOR_RGB2BGR)
     # cv2.imshow("Image", state)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     
     env.render()
-
+    break
+    
 env.close() 
