@@ -1,0 +1,24 @@
+ 
+Questa DNN è una versione semplificata di una rete neurale convoluzionale (CNN) utilizzata per apprendere e prendere decisioni in un ambiente di gioco, presumibilmente ispirato a un gioco come Super Mario. Ecco come funziona:
+
+    Input:
+        L'input viene presumibilmente rappresentato come un'immagine a colori (canales), con dimensioni 84x84 pixel. Quindi l'input_dim dovrebbe essere una tripla (c, h, w), dove c è il numero di canali (presumibilmente 3 per immagini a colori), e h e w sono altezza e larghezza rispettivamente.
+
+    Convolutional Layers:
+        La rete inizia con tre strati convoluzionali (Conv2d), ciascuno seguito da una funzione di attivazione ReLU (Rectified Linear Unit). Questi strati convoluzionali servono per estrarre le caratteristiche salienti dall'immagine.
+        Ogni strato convoluzionale ha parametri come il numero di canali di output (out_channels), la dimensione del kernel (kernel_size), e lo stride (passo) con cui il kernel scorre sull'input.
+
+    Flatten:
+        Dopo i tre strati convoluzionali, l'output viene appiattito in un vettore unidimensionale attraverso un livello di Flatten. Questo vettore è poi alimentato ai layer densi.
+
+    Dense Layers:
+        Successivamente ci sono due strati completamente connessi (Linear), ciascuno seguito da una funzione di attivazione ReLU. Questi strati densi sono progettati per apprendere relazioni più complesse tra le caratteristiche estratte dalle convoluzioni.
+        Il primo strato denso ha 3136 neuroni come output, poiché l'output dell'ultimo strato convoluzionale è appiattito in un vettore di dimensioni 3136.
+        Il secondo strato denso ha output_dim neuroni, che corrisponde al numero di classi di output o azioni possibili nell'ambiente di gioco.
+
+    Output:
+        L'output finale della rete è restituito come le previsioni della CNN. Se l'argomento "model" fornito nella funzione forward è "online", restituirà le previsioni della CNN online; se è "target", restituirà le previsioni della CNN target.
+
+    Modello Online e Target:
+        La rete ha due insiemi di parametri: uno per il modello "online" e uno per il modello "target". Questo è un approccio comune nell'apprendimento con rinforzo, dove il modello "online" è quello che viene attualmente addestrato e aggiornato, mentre il modello "target" è usato come riferimento stabile per il calcolo della loss function. I pesi del modello "target" vengono inizializzati con quelli del modello "online" e poi mantenuti fissi durante l'addestramento del modello "online". Periodicamente, i pesi del modello "target" vengono aggiornati con quelli del modello "online".
+
