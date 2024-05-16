@@ -5,30 +5,37 @@ from gym_super_mario_bros.actions import SIMPLE_MOVEMENT
 # env = JoypadSpace(env, SIMPLE_MOVEMENT)
 import cv2
 import pygame
+import gym
+#   print(gym.__version__) # 0.26.2
 
-from keras._tf_keras.keras.models import load_model
+def main():
+    # JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
+    env = gym_super_mario_bros.make('SuperMarioBros-v0', apply_api_compatibility=True, render_mode='human')
 
-# installare pygame, gym-super-mario-bros, nes-py
+    # env = JoypadSpace(env, SIMPLE_MOVEMENT)
+    # Limit the action-space to
+    #   0. walk right
+    #   1. jump right
+    env = JoypadSpace(env, [['right'], ['right', 'A']])
 
-JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
-env = gym_super_mario_bros.make('SuperMarioBros-v0', apply_api_compatibility=True, render_mode='human')
-env = JoypadSpace(env, SIMPLE_MOVEMENT)
 
-done = True
-clock = pygame.time.Clock()
-for step in range(5000):
-    clock.tick(24)
-    if done:
-        state = env.reset()
-    state, reward, terminated, truncated, info = env.step(env.action_space.sample())
-    done = terminated or truncated
-    
-    # state = cv2.cvtColor(state, cv2.COLOR_RGB2BGR)
-    # cv2.imshow("Image", state)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-    
-    env.render()
-    break
-    
-env.close() 
+    done = True
+    clock = pygame.time.Clock()
+    for step in range(5000):
+        clock.tick(24)
+        if done:
+            state = env.reset()
+        state, reward, terminated, truncated, info = env.step(env.action_space.sample())
+        done = terminated or truncated
+        
+        # state = cv2.cvtColor(state, cv2.COLOR_RGB2GRAY)
+        # state = cv2.resize(state, (84, 84))
+        
+        cv2.imshow("State", state)
+        
+        env.render()
+        
+    env.close() 
+
+if __name__ == '__main__':
+    main()
