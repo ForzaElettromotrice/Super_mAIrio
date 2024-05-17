@@ -6,3 +6,5 @@ keras
 pygame
 gym-super-mario-bros
 nes-py
+git+https://github.com/pytorch-labs/tensordict
+git+https://github.com/pytorch/rl.git
