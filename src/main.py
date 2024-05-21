@@ -55,14 +55,16 @@ def main():
 
     save_dir = Path("checkpoints") / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_dir.mkdir(parents=True)
+    
+    checkpoint = Path("./checkpoints/2024-05-20T20-04-19/mario_net_12.chkpt")
 
-    mario = Mario(state_dim=(4, 84, 84), action_dim=env.action_space.n, save_dir=save_dir)
+    mario = Mario(state_dim=(4, 84, 84), action_dim=env.action_space.n, save_dir=save_dir, checkpoint=checkpoint)
 
     # logger = MetricLogger(save_dir)
 
-    episodes = 40
+    episodes = 100
     for e in range(episodes):
-
+        print(f"Episode {e + 1}")
         state = env.reset()
 
         # Play the game!
@@ -84,6 +86,7 @@ def main():
 
             # Logging
             # logger.log_step(reward, loss, q)
+            # print(reward, loss, q)
 
             # Update state
             state = next_state

@@ -2,3 +2,4 @@
 .venv
 src/__pycache__
 model.keras
+checkpoints
