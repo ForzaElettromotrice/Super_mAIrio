@@ -23,12 +23,15 @@ def custom_reward(old, new):
     reward = 0
 
     reward += p / 2
+    
+    if new["flag_get"]:
+        reward += 5000
 
-    if new["status"] == "tall" and old["status"] == "small":
-        reward += 500
+    # if new["status"] == "tall" and old["status"] == "small":
+    #     reward += 500
 
     if d == 1:
-        reward -= 30
+        reward -= 60
 
     if v == 0:
         reward -= 10
@@ -82,15 +85,15 @@ def main():
     save_dir = Path("checkpoints") / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_dir.mkdir(parents = True)
 
-    checkpoint = Path("./checkpoints/2024-05-22T11-06-14/mario_net_7.chkpt")
+    checkpoint = Path("./checkpoints/2024-05-22T13-18-05/mario_net_41.chkpt")
     # checkpoint = None
 
     mario = Mario(state_dim = (4, 84, 84), action_dim = env.action_space.n, save_dir = save_dir, checkpoint = checkpoint)
 
     # logger = MetricLogger(save_dir)
-    mario.burnin = 0
+    mario.burnin = 32
     episodes = 1000
-    # mario.exploration_rate = 1
+    mario.exploration_rate = 0.38
     for e in range(episodes):
         print(f"Episode {e + 1}")
         state = env.reset()

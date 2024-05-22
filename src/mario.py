@@ -19,13 +19,13 @@ class Mario:
         self.net = self.net.to(device = self.device)
 
         self.exploration_rate = 1
-        self.exploration_rate_decay = 0.9999975
+        self.exploration_rate_decay = 0.99999975
         self.exploration_rate_min = 0.1
         self.curr_step = 0
 
         self.save_every = 5e3  # no. of experiences between saving Mario Net
 
-        self.memory = TensorDictReplayBuffer(storage = LazyMemmapStorage(100000, device = torch.device("cpu")))
+        self.memory = TensorDictReplayBuffer(storage = LazyMemmapStorage(10000, device = torch.device("cpu")))
         self.batch_size = 32
 
         self.gamma = 0.9
@@ -34,7 +34,7 @@ class Mario:
         if checkpoint:
             self.load(checkpoint)
 
-        self.optimizer = torch.optim.Adam(self.net.parameters(), lr = 0.00025)
+        self.optimizer = torch.optim.Adam(self.net.parameters(), lr = 0.0005)
         self.loss_fn = torch.nn.SmoothL1Loss()
 
         self.burnin = 1e4  # min. experiences before training
