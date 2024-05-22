@@ -82,13 +82,13 @@ def main():
     save_dir = Path("checkpoints") / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_dir.mkdir(parents = True)
 
-    checkpoint = Path("./checkpoints/2024-05-21T12-44-08/mario_net_7.chkpt")
+    checkpoint = Path("./checkpoints/2024-05-22T11-06-14/mario_net_7.chkpt")
     # checkpoint = None
 
     mario = Mario(state_dim = (4, 84, 84), action_dim = env.action_space.n, save_dir = save_dir, checkpoint = checkpoint)
 
     # logger = MetricLogger(save_dir)
-    # mario.burnin = 10000
+    mario.burnin = 0
     episodes = 1000
     # mario.exploration_rate = 1
     for e in range(episodes):

@@ -1,10 +1,8 @@
-numpy
+numpy <2.0.0b1
 opencv-contrib-python
 scikit-learn
-tensorflow
-keras
 pygame
 gym-super-mario-bros
-nes-py
+torch
 git+https://github.com/pytorch-labs/tensordict
 git+https://github.com/pytorch/rl.git
