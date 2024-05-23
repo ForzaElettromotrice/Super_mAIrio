@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from marionn import MarioNN
+from marionn2 import MarioNN
 
 from tensordict import TensorDict
 from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
@@ -19,7 +19,7 @@ class Mario:
                  sync_network_rate=10000):
         
         self.num_actions = num_actions
-        self.learn_step_counter = 0
+        self.train_step_counter = 0
 
         # Hyperparameters
         self.learning_rate = learning_rate
@@ -66,7 +66,7 @@ class Mario:
                                           }, batch_size=[]))
         
     def sync_networks(self):
-        if self.learn_step_counter % self.sync_network_rate == 0 and self.learn_step_counter > 0:
+        if self.train_step_counter % self.sync_network_rate == 0 and self.train_step_counter > 0:
             self.target_network.load_state_dict(self.online_network.state_dict())
 
     def save_model(self, path):
@@ -103,7 +103,7 @@ class Mario:
         loss.backward()
         self.optimizer.step()
 
-        self.learn_step_counter += 1
+        self.train_step_counter += 1
         self.decay_exploration_rate()
 
 

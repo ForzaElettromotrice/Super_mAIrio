@@ -8,7 +8,7 @@ from pathlib import Path
 # from agent import Agent
 
 from nes_py.wrappers import JoypadSpace
-from wrappers import apply_wrappers
+from wrappers2 import apply_wrappers
 
 from mario2 import Mario
 
