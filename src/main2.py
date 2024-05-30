@@ -19,8 +19,8 @@ import os
 ENV = 'SuperMarioBros-1-1-v0'
 TRAIN = True
 DISPLAY = True
-CKPT_SAVE_INTERVAL = 5000
-EPISODES = 10000
+CKPT_SAVE_INTERVAL = 500
+EPISODES = 50000
 
 def main():
     save_dir = Path("checkpoints") / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
@@ -38,14 +38,14 @@ def main():
     env = apply_wrappers(env)
     
     mario = Mario(input_dims=env.observation_space.shape, num_actions=env.action_space.n)
+    
+    ckpt_name = Path("./checkpoints/checkpoint-main2/model_12500_iter.pt")
+    mario.load_model(ckpt_name)
 
     if not TRAIN:
-        folder_name = ""
-        ckpt_name = ""
-        mario.load_model(os.path.join("models", folder_name, ckpt_name))
-        mario.epsilon = 0.2
-        mario.eps_min = 0.0
-        mario.eps_decay = 0.0
+        mario.exploration_rate = 0.2
+        mario.exploration_min = 0.0
+        mario.exploration_decay = 0.0
     
     env.reset()
     next_state, reward, done, trunc, info = env.step(action=0)
@@ -77,7 +77,9 @@ def main():
                 break
         
         if TRAIN and (e + 1) % CKPT_SAVE_INTERVAL == 0:
-            mario.save_model(os.path.join(save_dir, "model_" + str(e + 1) + "_iter.pt"))
+            save_path = os.path.join(save_dir, "model_" + str(e + 1) + "_iter.pt")
+            mario.save_model(save_path)
+            # mario.save_model(os.path.join(save_dir, "model_" + str(e + 1) + "_iter.pt"))
         
         
         print(f"Episode {e + 1} Total reward: {total_reward}, Max x: {max_x}")

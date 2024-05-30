@@ -60,8 +60,8 @@ def main():
     # Limit the action-space to
     #   0. walk right
     #   1. jump right
-    env = JoypadSpace(env, [['right'], ['right', 'A'], ['left'], ['A'], ['left', 'A']])
-    # env = JoypadSpace(env, [['right'], ['right', 'A'], ['A']])
+    # env = JoypadSpace(env, [['right'], ['right', 'A'], ['left'], ['A'], ['left', 'A']])
+    env = JoypadSpace(env, [['right'], ['right', 'A']])
     # done = True
     # clock = pygame.time.Clock()
     # for step in range(5000):
@@ -85,7 +85,7 @@ def main():
     save_dir = Path("checkpoints") / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_dir.mkdir(parents = True)
 
-    checkpoint = Path("./checkpoints/2024-05-22T20-23-16/mario_net_20.chkpt")
+    checkpoint = Path("./checkpoints/checkpoint-solo-destra/best_one.chkpt")
     # checkpoint = None
 
     mario = Mario(state_dim = (4, 84, 84), action_dim = env.action_space.n, save_dir = save_dir, checkpoint = checkpoint)
@@ -95,11 +95,12 @@ def main():
     episodes = 1000
     # mario.exploration_rate = 0.38
     for e in range(episodes):
-        print(f"Episode {e + 1}")
         state = env.reset()
 
         # Play the game!
         old_info = None
+        total_reward = 0
+        max_x = 0
 
         while True:
 
@@ -120,10 +121,10 @@ def main():
                 print(mario.exploration_rate)
 
             # Remember
-            mario.cache(state, next_state, action, reward, done)
+            # mario.cache(state, next_state, action, reward, done)
 
             # Learn
-            q, loss = mario.learn()
+            # q, loss = mario.learn()
 
             # Logging
             # logger.log_step(reward, loss, q)
@@ -131,13 +132,15 @@ def main():
 
             # Update state
             state = next_state
+            total_reward += reward
+            max_x = max(info["x_pos"], max_x)
 
             # Check if end of game
             if done or info["flag_get"]:
                 break
 
         # logger.log_episode()
-
+        print(f"Episode {e + 1} Total reward: {total_reward}, Max x: {max_x}")
         # if (e % 20 == 0) or (e == episodes - 1):
         #     logger.record(episode=e, epsilon=mario.exploration_rate, step=mario.curr_step)
 
