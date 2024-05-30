@@ -1,0 +1,4 @@
+Deep Reinforcement Learning Doesn't Work Yet -> https://www.alexirpan.com/2018/02/14/rl-hard.html
+Deep Reinforcement Learning with Double Q-learning -> https://arxiv.org/abs/1509.06461
+Reinforcement Learning an Introduction: -> //web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf
+AI Learns to Speedrun Mario -> https://www.youtube.com/watch?v=OQitI066aI0
