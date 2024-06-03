@@ -17,7 +17,6 @@ class MarioNet(nn.Module):
             raise ValueError(f"Expecting input width: 84, got: {w}")
 
         self.online = self.__build_cnn(c, output_dim)
-
         self.target = self.__build_cnn(c, output_dim)
         self.target.load_state_dict(self.online.state_dict())
 
@@ -28,8 +27,7 @@ class MarioNet(nn.Module):
     def forward(self, input, model):
         if model == "online":
             return self.online(input)
-        elif model == "target":
-            return self.target(input)
+        return self.target(input)
 
     def __build_cnn(self, c, output_dim):
         return nn.Sequential(
@@ -45,17 +43,3 @@ class MarioNet(nn.Module):
             nn.Linear(512, output_dim),
         )
         
-    def td_estimate(self, state, action):
-        current_Q = self.net(state, model="online")[
-            np.arange(0, self.batch_size), action
-        ]  # Q_online(s,a)
-        return current_Q
-
-    @torch.no_grad()
-    def td_target(self, reward, next_state, done):
-        next_state_Q = self.net(next_state, model="online")
-        best_action = torch.argmax(next_state_Q, axis=1)
-        next_Q = self.net(next_state, model="target")[
-            np.arange(0, self.batch_size), best_action
-        ]
-        return (reward + (1 - done.float()) * self.gamma * next_Q).float()

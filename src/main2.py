@@ -17,7 +17,7 @@ import os
 # from utils import *
 
 ENV = 'SuperMarioBros-1-1-v0'
-TRAIN = True
+TRAIN = False
 DISPLAY = True
 CKPT_SAVE_INTERVAL = 500
 EPISODES = 50000
@@ -33,13 +33,15 @@ def main():
 
     
     env = gym_super_mario_bros.make(ENV, render_mode='human' if DISPLAY else 'rgb', apply_api_compatibility=True)
-    env = JoypadSpace(env, RIGHT_ONLY)
+    # env = JoypadSpace(env, RIGHT_ONLY)
+    print(RIGHT_ONLY)
+    env = JoypadSpace(env, [['right'], ['right', 'A']])
     
     env = apply_wrappers(env)
     
     mario = Mario(input_dims=env.observation_space.shape, num_actions=env.action_space.n)
     
-    ckpt_name = Path("./checkpoints/checkpoint-main2/model_12500_iter.pt")
+    ckpt_name = Path("./checkpoints/checkpoint-solo-destra/best_one2.chkpt")
     mario.load_model(ckpt_name)
 
     if not TRAIN:
