@@ -4,11 +4,11 @@ from pathlib import Path
 import gym
 import gym_super_mario_bros
 import torch
-from gym.wrappers import FrameStack
+
 from nes_py.wrappers import JoypadSpace
 
 from mario import Mario
-from wrapper import SkipFrame, GrayScaleObservation, ResizeObservation
+from wrapper import apply_wrappers
 
 ENV = 'SuperMarioBros-v0'
 TRAIN = False
@@ -27,13 +27,7 @@ def main():
     env = gym_super_mario_bros.make(ENV, apply_api_compatibility = True, render_mode='human' if DISPLAY else 'rgb')
 
     # Apply Wrappers to environment
-    env = SkipFrame(env, skip = 4)
-    env = GrayScaleObservation(env)
-    env = ResizeObservation(env, shape = 84)
-    if gym.__version__ < '0.26':
-        env = FrameStack(env, num_stack = 4, new_step_api = True)
-    else:
-        env = FrameStack(env, num_stack = 4)
+    env = apply_wrappers(env)
 
     # Limit the actions to
     #  - walk right
@@ -42,7 +36,8 @@ def main():
 
     checkpoint = Path("./checkpoints/checkpoint-solo-destra/best_one.chkpt")
     mario = Mario(state_dim = env.observation_space.shape, action_dim = env.action_space.n, save_dir = save_dir, checkpoint = checkpoint)
-    mario.burnin = 32
+
+    # mario.burnin = 32
     for e in range(EPISODES):
         state = env.reset()
         total_reward = 0
@@ -56,11 +51,9 @@ def main():
             # if mario.curr_step % 5000 == 0:
             #     print(mario.exploration_rate)
 
-            # Remember
-            mario.cache(state, next_state, action, reward, done)
-
-            # Learn
-            mario.learn()
+            if TRAIN: 
+                mario.cache(state, next_state, action, reward, done)
+                mario.learn()
 
             # Update state
             state = next_state

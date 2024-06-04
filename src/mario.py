@@ -24,13 +24,6 @@ class Mario:
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.save_dir = save_dir
-
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        # Mario's DNN to predict the most optimal action - we implement this in the Learn section
-        self.net = MarioNet(self.state_dim, self.action_dim).float()
-        self.net = self.net.to(device = self.device)
-
         self.gamma = gamma
         self.exploration_rate = exploration_rate
         self.exploration_rate_decay = exploration_decay
@@ -42,6 +35,9 @@ class Mario:
         self.curr_step = 0
         self.save_every = 5e3 
 
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.net = MarioNet(self.state_dim, self.action_dim).float()
+
         self.memory = TensorDictReplayBuffer(storage = LazyMemmapStorage(replay_buffer_capacity, device = torch.device("cpu")))
 
         self.use_cuda = torch.cuda.is_available()
@@ -52,22 +48,18 @@ class Mario:
         self.loss_fn = torch.nn.MSELoss()
 
     def act(self, state):
-        # EXPLORE
-        if np.random.rand() < self.exploration_rate:
+        if np.random.rand() < self.exploration_rate:    # Exploration
             action_idx = np.random.randint(self.action_dim)
 
-        # EXPLOIT
-        else:
+        else:    # Exploitation
             state = state[0].__array__() if isinstance(state, tuple) else state.__array__()
             state = torch.tensor(state, device = self.device).unsqueeze(0)
             action_values = self.net(state, model = "online")
             action_idx = torch.argmax(action_values, axis = 1).item()
 
-        # decrease exploration_rate
         self.exploration_rate *= self.exploration_rate_decay
         self.exploration_rate = max(self.exploration_rate_min, self.exploration_rate)
 
-        # increment step
         self.curr_step += 1
         return action_idx
 
@@ -86,28 +78,9 @@ class Mario:
                                             "done": torch.tensor(done)
                                           }, batch_size=[]))
 
-    def recall(self):
-        """
-        Retrieve a batch of experiences from memory
-        """
-        batch = self.memory.sample(self.batch_size).to(self.device)
-        state, next_state, action, reward, done = (batch.get(key) for key in ("state", "next_state", "action", "reward", "done"))
-        return state, next_state, action.squeeze(), reward.squeeze(), done.squeeze()
-
     def sync_Q_target(self):
         if self.curr_step % self.sync_every == 0:
             self.net.target.load_state_dict(self.net.online.state_dict())
-
-    def save(self):
-        if self.curr_step % self.save_every == 0:
-            save_path = (
-                    self.save_dir / f"mario_net_{int(self.curr_step // self.save_every)}.chkpt"
-            )
-            torch.save(
-                dict(model = self.net.state_dict(), exploration_rate = self.exploration_rate),
-                save_path,
-            )
-            print(f"MarioNet saved to {save_path} at step {self.curr_step}")
 
     def learn(self):
         self.sync_Q_target()
@@ -119,8 +92,11 @@ class Mario:
         if self.curr_step % self.learn_every != 0:
             return None, None
 
-        # Sample from memory
-        state, next_state, action, reward, done = self.recall()
+        batch = self.memory.sample(self.batch_size).to(self.device)
+        state, next_state, action, reward, done = (batch.get(key) for key in ("state", "next_state", "action", "reward", "done"))
+        action = action.squeeze()
+        reward = reward.squeeze() 
+        done = done.squeeze()
 
         q_est = self.net(state, model = "online")[np.arange(0, self.batch_size), action] 
         q_tar = self.td_target(reward, next_state, done)
@@ -139,6 +115,19 @@ class Mario:
             np.arange(0, self.batch_size), best_action
         ]
         return (reward + (1 - done.float()) * self.gamma * next_Q).float()
+    
+    def save(self):
+        if self.curr_step % self.save_every != 0:
+            return
+        
+        save_path = (
+                self.save_dir / f"mario_net_{int(self.curr_step // self.save_every)}.chkpt"
+        )
+        torch.save(
+            dict(model = self.net.state_dict(), exploration_rate = self.exploration_rate),
+            save_path,
+        )
+        print(f"MarioNet saved to {save_path} at step {self.curr_step}")
 
     def load(self, load_path):
         if not load_path.exists():

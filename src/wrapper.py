@@ -4,6 +4,14 @@ import numpy as np
 import gym
 from gym.spaces import Box
 from torchvision import transforms as T
+from gym.wrappers import FrameStack
+
+def apply_wrappers(env):
+    env = SkipFrame(env, skip = 4)
+    env = GrayScaleObservation(env)
+    env = ResizeObservation(env, shape = 84)
+    env = FrameStack(env, num_stack = 4)
+    return env
 
 class SkipFrame(gym.Wrapper):
     def __init__(self, env, skip):
