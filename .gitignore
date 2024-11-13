@@ -2,5 +2,3 @@
 .venv
 src/__pycache__
 model.keras
-prova.py
-salava.py
