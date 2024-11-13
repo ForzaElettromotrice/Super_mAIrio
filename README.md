@@ -10,7 +10,14 @@ The project is developed by:
 The objective of the project is to create an AI agent that can play the Super Mario Bros game, exploiting a reinforcement learning approach based on Double Deep Q-Network (DDQN).
 
 ## Description
+The project is based on the [gym-super-mario-bros](https://github.com/Kautenja/gym-super-mario-bros) environment, which is a custom environment for OpenAI Gym that allows the user to play the Super Mario Bros game.
 
+<p align="center">
+    <img src="img/game.png" alt="Mario plays"/><br>
+    <em>Figure 1: Mario plays</em><br>
+    <img src="img/flag.png" alt="Mario reaches flag"/><br>
+    <em>Figure 2: Mario completes the level</em><br>
+</p>
 
 ## Installation
 To install the project, you need to clone the repository and install the required packages.\
