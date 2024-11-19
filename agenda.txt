@@ -1,9 +1,0 @@
-
-- CNN per analizzare screen del livello
-    - (RPN Region Proposal Network) ?
-- Provare la libreria del gioco di mario
-
-
-
-- LateX e ppt 
-- Pensare a piano B del progetto
